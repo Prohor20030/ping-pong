@@ -2,7 +2,7 @@ from pygame import *
 finish = False
 
 class GameSprite(sprite.Sprite):
-    def __init__(self, filename, x, y, speed, sizeX = 65, sizeY = 65):
+    def __init__(self, filename, x, y, speed, sizeX = 14, sizeY = 120):
         super().__init__()
         self.image = transform.scale(image.load(filename), (sizeX, sizeY))
         self.rect = self.image.get_rect()
@@ -10,20 +10,45 @@ class GameSprite(sprite.Sprite):
         self.rect.y = y
         self.speed = speed
     
-
-class Player(GameSprite):
-    def update(self):
-        keys_pressed = key.get_pressed()
-        if keys_pressed[K_s] and self.rect.y >= 0:
-            self.rect.x -= self.speed
-        if keys_pressed[K_w] and self.rect.y <= 635:
-            self.rect.x += self.speed
-
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
+    
 
-ping = Player('ping.png', 325, 430, 4)
-pong = Player('pong.png', 325, 430, 4)
+class Player1(GameSprite):
+    def update(self):
+        keys_pressed = key.get_pressed()
+        if keys_pressed[K_s] and self.rect.y <= 349:
+            self.rect.y += self.speed
+        if keys_pressed[K_w] and self.rect.y >= 33:
+            self.rect.y -= self.speed
+
+class Player2(GameSprite):
+    def update(self):
+        keys_pressed = key.get_pressed()
+        if keys_pressed[K_DOWN] and self.rect.y <= 349:
+            self.rect.y += self.speed
+        if keys_pressed[K_UP] and self.rect.y >= 33:
+            self.rect.y -= self.speed
+
+speed_x = 3
+speed_y = 3
+
+class Ball(GameSprite):
+
+    def update(self):
+        global speed_y, speed_x
+        self.rect.x += speed_x
+        self.rect.y += speed_y
+    
+        if self.rect.y > 449 or self.rect.y < 33:
+            speed_y *= -1
+
+
+
+
+ping = Player1('ping.png', 30, 50, 4)
+pong = Player2('pong.png', 457, 350, 4)
+ball = Ball('ping-pong ball.png', 240, 240, 3, 20, 20)
 
 window = display.set_mode((500, 500))
 game = True
@@ -40,6 +65,11 @@ while game:
         ping.reset()
         pong.update()
         pong.reset()
+        ball.update()
+        ball.reset()
+        if sprite.collide_rect(ping, ball) or sprite.collide_rect(pong, ball):
+           speed_x *= -1
+        
 
 
     for e in event.get():
