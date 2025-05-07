@@ -1,6 +1,8 @@
 from pygame import *
 finish = False
 
+lost = 0
+score = 0
 class GameSprite(sprite.Sprite):
     def __init__(self, filename, x, y, speed, sizeX = 14, sizeY = 120):
         super().__init__()
@@ -42,9 +44,24 @@ class Ball(GameSprite):
     
         if self.rect.y > 449 or self.rect.y < 33:
             speed_y *= -1
+        
+        if self.rect.x < 30:
+            global lost
+            lost += 1
+            self.rect.y = 230
+            self.rect.x = 230
+        if self.rect.x > 453:
+            global score
+            score += 1
+            self.rect.y = 230
+            self.rect.x = 230
 
+font.init()
+font1 = font.SysFont('Arial', 30)
+font2 = font.SysFont('Arial', 30)
 
-
+win = font2.render('Ю ВОН', True, (54, 128, 72))
+lose = font2.render('Ю ЛОСЬ', True, (28, 144, 87))
 
 ping = Player1('ping.png', 30, 50, 4)
 pong = Player2('pong.png', 457, 350, 4)
@@ -57,10 +74,12 @@ clock = time.Clock()
 
 background = transform.scale(image.load('frame.png'), (500, 500))
 while game:
-    #text_lose = font1.render('Пропущенно:' + str(lost), 1,(123, 243, 13))
-    #text = font1.render('Счет:' + str(score), 1,(74, 177, 39))
+    text_score1 = font1.render('score:' + str(score), 1,(125, 255, 105))
+    text_socre2 = font1.render('score:' + str(lost), 1,(240, 20, 210))
     if not finish:
         window.blit(background, (0, 0))
+        window.blit(text_score1, (28, 0))
+        window.blit(text_socre2, (360, 0))
         ping.update()
         ping.reset()
         pong.update()
